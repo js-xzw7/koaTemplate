@@ -61,7 +61,7 @@ class config {
                     freezeTableName: true,  //不会尝试更改模型名称以获取表名称。否则，型号名称将被复数
                 }
             },
-            syncdb:true,                   //同步数据库
+            syncdb:false,                   //同步数据库
         }
     };
 }
