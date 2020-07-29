@@ -1,0 +1,42 @@
+#!/usr/bin/env node
+
+const app = require('../app');
+const os = require('os');
+const config = global.config;
+const logger = global.logger.system;
+
+
+//启动服务
+const server =  app.listen(config.system.port,'0.0.0.0',() => {
+  let ifaces = os.networkInterfaces();
+  let localhost = ['localhost'];
+
+  Object.keys(ifaces).forEach(ifname => {
+    ifaces[ifname].forEach(iface => {
+      if('IPv4' !== iface.family || iface.internal !== false) return;
+      localhost.push(iface.address);
+    });
+  });
+
+  let server_address = server.address();
+  let port = server_address.port;
+  logger.info(`Server is listening at: `,localhost.map(ip => {return `http://${ip}:${port}`;}).join('\n'));
+});
+
+
+//将异常事件绑定到日志
+process.on('uncaughtException', function (e) {
+  logger.error('uncaughtException from process', e);
+  if (e.code === 'EADDRINUSE') {
+      logger.error(`服务端口${config.system.port}被占用!`);
+      process.exit(config.system.port);
+  }
+});
+
+process.on('unhandledRejection', (e) => {
+  logger.warn('unhandledRejection from process', e);
+});
+
+process.on('rejectionHandled', (e) => {
+  logger.warn('rejectionHandled from process', e);
+});
