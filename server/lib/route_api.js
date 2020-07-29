@@ -33,13 +33,13 @@ class routePath {
             const dir_path = path.resolve(ROUTES_PATH, dir);
             const files = fs.readdirSync(dir_path);
 
-            files.filter(file => ~file.search(/^[^\.].*\.js$/)).forEach( async file => {
+            files.filter(file => ~file.search(/^[^\.].*\.js$/)).forEach(async file => {
                 //获取文件名
                 const fileName = file.substr(0, file.length - 3);
 
                 //实例化
                 const file_path = path.resolve(dir_path, file);
-                const instantiation = new (require(file_path))(global.sequelize,abstract.import);
+                const instantiation = new (require(file_path))(global.sequelize, abstract.import);
 
                 //注册实例中函数路由
                 await this.modrr(instantiation, fileName, dir);
@@ -67,11 +67,14 @@ class routePath {
                 let url = url_arr.join('')
                 let method_list = ['get', 'post', 'put', 'delete', 'patch']
 
-                if (!method_list.includes(method))
-                    throw (`${dir}/${fileName}/${p} 函数命名格式错误！`);
-
-                //注册路由，防止隐形丢失this,实例方法使用bind绑定this
-                routes[method](`/${dir}/${fileName}/${url}`,instantiation[p].bind(instantiation))
+                if (!method_list.includes(method)) {
+                     /* throw (`${dir}/${fileName}/${p} 函数命名格式错误！`); */
+                    routes['get'](`/${dir}/${fileName}/${p}`, instantiation[p].bind(instantiation));
+                    routes['post'](`/${dir}/${fileName}/${p}`, instantiation[p].bind(instantiation));
+                } else {
+                    //注册路由，防止隐形丢失this,实例方法使用bind绑定this
+                    routes[method](`/${dir}/${fileName}/${url}`, instantiation[p].bind(instantiation))
+                }
 
             })
 
