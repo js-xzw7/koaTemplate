@@ -29,7 +29,7 @@
     "log4js": "^6.1.2",
     "moment": "^2.27.0",
     "mongodb": "^3.5.5",
-    "mongoose": "^5.9.7",
+    "mongoose": "^5.13.15",
     "node-schedule": "^1.3.2",
     "nodemon": "^1.19.1"
   }
